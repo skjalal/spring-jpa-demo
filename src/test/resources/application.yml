@@ -1,0 +1,35 @@
+# Common PROPERTIES
+
+spring:
+  application:
+    name: spring-jpa-demo
+  profiles:
+    active: test
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    database: mysql
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  sql:
+    init:
+      mode: never
+
+# Environment specific PROPERTIES
+---
+spring:
+  config:
+    activate:
+      on-profile: test
+  datasource:
+    username: root
+    password: mysql
+    url: jdbc:mysql://127.0.0.1:3306/orderservice?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+  flyway:
+    user: orderadmin
+    password: password
