@@ -1,6 +1,8 @@
 package com.example.config;
 
 import com.example.interceptors.HibernateDataInterceptor;
+import com.example.listerners.HibernateListener;
+import jakarta.persistence.EntityManagerFactory;
 import java.util.Map;
 import org.hibernate.Interceptor;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernatePropertiesCustomizer;
@@ -12,19 +14,20 @@ import org.springframework.core.env.Environment;
 public class HibernateConfig {
 
   @Bean
-  public Interceptor hibernateInterceptor(Environment env) {
-    return new HibernateDataInterceptor(env);
+  public HibernateListener hibernateListener(EntityManagerFactory factory) {
+    return new HibernateListener(factory);
   }
 
   @Bean
-  public HibernatePropertiesCustomizer customizer(Interceptor hibernateInterceptor) {
-    var customizer = new HibernatePropertiesCustomizerImpl(hibernateInterceptor);
+  public HibernatePropertiesCustomizer customizer(Environment env) {
+    var customizer = new HibernatePropertiesCustomizerImpl(env);
     return customizer::customize;
   }
 
-  private record HibernatePropertiesCustomizerImpl(Interceptor hibernateInterceptor) {
+  private record HibernatePropertiesCustomizerImpl(Environment env) {
 
     public void customize(Map<String, Object> hibernateProperties) {
+      Interceptor hibernateInterceptor = new HibernateDataInterceptor(env);
       hibernateProperties.put("hibernate.session_factory.interceptor", hibernateInterceptor);
     }
   }
